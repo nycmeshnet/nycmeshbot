@@ -1,6 +1,6 @@
 <!channel> - ID: {{appt_id}}
 
-[{{appt_type}}] request node: {{node_number}}
+{{ "*Cancelled* - " if cancel }}[{{appt_type}}] request node: <https://www.nycmesh.net/map/nodes/{{node_number}}|{{node_number}}>
 
 Who: {{name}}
 When: *{{date}}* at {{time}}
@@ -8,5 +8,7 @@ Where: {{address}}
 Phone: {{phone}}
 
 Additional Notes: {{notes}}
+
+{{ private_notes if private_notes|length }}
 
 Are you available? Thread here

@@ -1,0 +1,75 @@
+2019-03-16 19:45:23,133 ERROR: Exception on /acuity [POST] [in /usr/local/lib/python3.5/dist-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/local/lib/python3.5/dist-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/routes.py", line 13, in acuity
+    handler.parse_event(data.get('action'), data.get('id'), 'install-team')
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py", line 103, in parse_event
+    self.handle_update_event(appt_id, output, channel_id)
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py", line 127, in handle_update_event
+    messageText = pinned['message']['text']
+KeyError: 'message'
+2019-03-16 19:45:24,000 INFO: Received schedule webhook from acuity: 273986058 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:110]
+2019-03-16 19:45:24,270 INFO: {'channel': 'G0FS2EVSQ', 'ts': '1552765524.224700', 'ok': True, 'message': {'subtype': 'bot_message', 'text': '<!channel> - ID: 273986058\n\n[Install] request node: <https://www.nycmesh.net/map/nodes/3037|3037>\n\nWho: garret linn\nWhen: *Wednesday, March 27, 2019* at 02:00 PM\nWhere: 62 East Broadway, NYC, NY 10002, USA\nPhone: 9178059960\n\nAdditional Notes: \n\n\n\nAre you available? Thread here', 'type': 'message', 'ts': '1552765524.224700', 'bot_id': 'BGAUPNBDF', 'username': 'NYCMesh'}, 'headers': {'Referrer-Policy': 'no-referrer', 'X-Accepted-OAuth-Scopes': 'chat:write:bot', 'Pragma': 'no-cache', 'Vary': 'Accept-Encoding', 'X-Amz-Cf-Id': 'glkyIGyx1xrB0OSXcBC9SdHO6GDqT9L6j__gbKHHPVhxmCOynbZbVg==', 'X-Cache': 'Miss from cloudfront', 'Server': 'Apache', 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload', 'X-XSS-Protection': '0', 'Content-Encoding': 'gzip', 'Connection': 'keep-alive', 'X-OAuth-Scopes': 'identify,bot,commands,incoming-webhook,channels:read,groups:read,pins:read,users.profile:read,chat:write:user,chat:write:bot,pins:write', 'Expires': 'Mon, 26 Jul 1997 05:00:00 GMT', 'Content-Length': '356', 'Access-Control-Expose-Headers': 'x-slack-req-id', 'Access-Control-Allow-Headers': 'slack-route, x-slack-version-ts', 'X-Content-Type-Options': 'nosniff', 'Content-Type': 'application/json; charset=utf-8', 'X-Via': 'haproxy-www-b142', 'Date': 'Sat, 16 Mar 2019 19:45:24 GMT', 'Access-Control-Allow-Origin': '*', 'X-Slack-Req-Id': '5108200b-ce0d-4c49-b3b6-f0dc9b4ae05d', 'Via': '1.1 5729f5da693075d8d779907600e93304.cloudfront.net (CloudFront)', 'Cache-Control': 'private, no-cache, no-store, must-revalidate'}} [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:113]
+2019-03-16 19:45:45,858 INFO: Received reschedule/change webhook from acuity: 273986058 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-18 02:36:35,581 INFO: Received reschedule/change webhook from acuity: 273482344 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-18 16:07:41,650 INFO: Received reschedule/change webhook from acuity: 273482344 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-19 15:25:56,436 INFO: Received reschedule/change webhook from acuity: 274511478 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-19 21:44:35,180 INFO: Received reschedule/change webhook from acuity: 274661167 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-19 21:44:35,630 ERROR: Exception on /acuity [POST] [in /usr/local/lib/python3.5/dist-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/local/lib/python3.5/dist-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/routes.py", line 13, in acuity
+    handler.parse_event(data.get('action'), data.get('id'), 'install-team')
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py", line 103, in parse_event
+    self.handle_update_event(appt_id, output, channel_id)
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py", line 127, in handle_update_event
+    messageText = pinned['message']['text']
+KeyError: 'message'
+2019-03-19 21:44:36,393 INFO: Received schedule webhook from acuity: 274661167 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:110]
+2019-03-19 21:44:36,686 INFO: {'channel': 'G0FS2EVSQ', 'ts': '1553031876.243200', 'ok': True, 'message': {'subtype': 'bot_message', 'text': '<!channel> - ID: 274661167\n\n[Install] request node: <https://www.nycmesh.net/map/nodes/3044|3044>\n\nWho: Stallings properties Hall\nWhen: *Friday, March 29, 2019* at 11:00 AM\nWhere: 49 Ludlow Street, New York, NY, USA\nPhone: 3476104759\n\nAdditional Notes: Litebeam to hotel rivington?\n\nPower from camera room in basement.  - Dan Ethernet to front door intercom\n\n\n\nAre you available? Thread here', 'type': 'message', 'ts': '1553031876.243200', 'bot_id': 'BGAUPNBDF', 'username': 'NYCMesh'}, 'headers': {'Referrer-Policy': 'no-referrer', 'X-Accepted-OAuth-Scopes': 'chat:write:bot', 'Pragma': 'no-cache', 'Vary': 'Accept-Encoding', 'X-Amz-Cf-Id': 'U0T8oyY4QR-oQl2u84PbMuaLdtjiFCIEHxQ-swE1N2tIPRvFL1B-lg==', 'X-Cache': 'Miss from cloudfront', 'Server': 'Apache', 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload', 'X-XSS-Protection': '0', 'Content-Encoding': 'gzip', 'Connection': 'keep-alive', 'X-OAuth-Scopes': 'identify,bot,commands,incoming-webhook,channels:read,groups:read,pins:read,users.profile:read,chat:write:user,chat:write:bot,pins:write', 'Expires': 'Mon, 26 Jul 1997 05:00:00 GMT', 'Content-Length': '437', 'Access-Control-Expose-Headers': 'x-slack-req-id', 'Access-Control-Allow-Headers': 'slack-route, x-slack-version-ts', 'X-Content-Type-Options': 'nosniff', 'Content-Type': 'application/json; charset=utf-8', 'X-Via': 'haproxy-www-lirn', 'Date': 'Tue, 19 Mar 2019 21:44:36 GMT', 'Access-Control-Allow-Origin': '*', 'X-Slack-Req-Id': 'b575313f-e62a-4227-a986-9b758d53caee', 'Via': '1.1 6c378f62253fc1e443ac0b930892a0d4.cloudfront.net (CloudFront)', 'Cache-Control': 'private, no-cache, no-store, must-revalidate'}} [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:113]
+2019-03-19 21:44:38,303 INFO: Received reschedule/change webhook from acuity: 274661167 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-19 21:46:39,563 INFO: Received reschedule/change webhook from acuity: 274661679 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:117]
+2019-03-19 21:46:39,990 ERROR: Exception on /acuity [POST] [in /usr/local/lib/python3.5/dist-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/local/lib/python3.5/dist-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/routes.py", line 13, in acuity
+    handler.parse_event(data.get('action'), data.get('id'), 'install-team')
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py", line 103, in parse_event
+    self.handle_update_event(appt_id, output, channel_id)
+  File "/opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py", line 127, in handle_update_event
+    messageText = pinned['message']['text']
+KeyError: 'message'
+2019-03-19 21:46:40,633 INFO: Received schedule webhook from acuity: 274661679 in calendar [in /opt/nycmeshbot/nycmeshbot/app/acuity/handlers.py:110]
