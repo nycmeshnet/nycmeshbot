@@ -1,13 +1,9 @@
-import time
+import time, os
 from slackclient import SlackClient
 from flask import current_app
  
 # instantiate Slack client
-#SLACK_API_TOKEN = appconfig['SLACK_API_TOKEN']
-#slack_client = SlackClient(SLACK_API_TOKEN)
-#slack_client = SlackClient("xoxb-2725312681-484840581858-QAao02pafVBArxGMBkfhvIrR")
-slack_client = SlackClient("xoxp-2725312681-282878884706-555503039892-7157277e7cbe09bc2552e82e60d9d42f")
-#slack_client = SlackClient(current_app['SLACK_API_TOKEN'])
+slack_client = SlackClient(os.environ("SLACK_API_TOKEN"))
 bot_name = "nycmeshbot"
 #bot_id = get_bot_id()
     
