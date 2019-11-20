@@ -31,3 +31,4 @@ build
 .env*
 oldapp
 app/logs/*
+app/acuity.old/
