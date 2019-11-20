@@ -28,5 +28,6 @@ venv
 *.pyc
 build
 .env
+.env*
 oldapp
 app/logs/*
