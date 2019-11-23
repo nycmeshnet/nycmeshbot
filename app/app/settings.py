@@ -132,3 +132,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ACUITY_USER_ID = os.environ.get("ACUITY_USER_ID","")
+ACUITY_API_KEY = os.environ.get("ACUITY_API_KEY","")
+SLACK_API_TOKEN = os.environ.get("SLACK_API_TOKEN")
+SLACK_API_SECRET = os.environ.get("SLACK_API_SECRET")
+SLACK_CHANNEL = os.environ.get("SLACK_CHANNEL")
