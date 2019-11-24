@@ -55,12 +55,12 @@ ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
-      'BACKEND': 'django.template.backends.jinja2.Jinja2',
-      'DIRS': [os.path.join(BASE_DIR, 'templates/jinja2')],
-      'APP_DIRS': True,
-      'OPTIONS': {
-        'environment': 'app.jinja2.environment'
-      },
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [os.path.join(BASE_DIR, 'templates/jinja2')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'app.jinja2.environment'
+        },
     },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -133,8 +133,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ACUITY_USER_ID = os.environ.get("ACUITY_USER_ID","")
-ACUITY_API_KEY = os.environ.get("ACUITY_API_KEY","")
+ACUITY_USER_ID = os.environ.get("ACUITY_USER_ID")
+ACUITY_API_KEY = os.environ.get("ACUITY_API_KEY")
 SLACK_API_TOKEN = os.environ.get("SLACK_API_TOKEN")
 SLACK_API_SECRET = os.environ.get("SLACK_API_SECRET")
 SLACK_CHANNEL = os.environ.get("SLACK_CHANNEL")
