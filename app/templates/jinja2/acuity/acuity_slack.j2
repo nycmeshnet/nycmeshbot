@@ -4,7 +4,7 @@
 
 Who: {{appt.name}}
 When: *{{date}}* at {{time}}
-Where: {{appt.address}}
+Where: {{appt.address}} (<https://www.google.com/maps/place/{{appt.address | urlencode}}|Google Maps>, <https://maps.apple.com/?q={{appt.address | urlencode}}|Apple Maps>)
 Phone: {{appt.phone}}
 
 Additional Notes: {{appt.notes}}
