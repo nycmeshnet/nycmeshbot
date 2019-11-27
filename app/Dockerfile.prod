@@ -20,7 +20,8 @@ RUN apk update \
 RUN pip install --upgrade pip
 RUN pip install flake8
 COPY . /usr/src/app/
-RUN flake8 --ignore=E501,F401 .
+# RUN flake8 --ignore=E501,F401 .
+RUN flake8 --exit-zero .
 
 # install dependencies
 COPY ./requirements.txt .
@@ -47,7 +48,7 @@ RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 # install dependencies
-RUN apk update && apk add libpq
+RUN apk update && apk add libpq gcc musl-dev
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip

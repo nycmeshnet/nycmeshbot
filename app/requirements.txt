@@ -8,3 +8,4 @@ python-dateutil==2.8.1
 slackclient
 psycopg2
 requests
+gunicorn
