@@ -183,4 +183,4 @@ def edit_message(text, channel, ts):
     dict
         Slack API Call Response
     """
-    return slack_adminchat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=False)
+    return slack_admin.chat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=False)
