@@ -50,13 +50,23 @@ def get_channel_id(channel_name):
     channelID : str
         Channel ID from Slack
     """
-    channels_call = slack_client.conversations_list(exclude_archived="true", types='public_channel,private_channel')
+    channels_call = slack_client.conversations_list(exclude_archived="true", types='public_channel')
     channelID = channel_name
     if channels_call['ok']:
-        logger.debug("api call is ok")
+        logger.debug(f"api call is ok.")
         for channel in channels_call['channels']:
             if channel['name'] == channel_name:
+                logger.debug(f"{channel}")
                 channelID = channel['id']
+    if channel_name == channelID:
+        channels_call = slack_client.conversations_list(exclude_archived="true", types='private_channel')
+        channelID = channel_name
+        if channels_call['ok']:
+            logger.debug(f"api call is ok.")
+            for channel in channels_call['channels']:
+                if channel['name'] == channel_name:
+                    logger.debug(f"{channel}")
+                    channelID = channel['id']
     return channelID
 
 
@@ -88,7 +98,7 @@ def post_to_channel(text, channel, attachments=None):
     dict
         Slack API Call Response
     """
-    return slack_client.chat_postMessage(channel=get_channel_id(channel), text=text, as_user=False)
+    return slack_admin.chat_postMessage(channel=get_channel_id(channel), text=text, as_user=False)
 
 
 def pin_to_channel(channel, ts):
@@ -173,4 +183,4 @@ def edit_message(text, channel, ts):
     dict
         Slack API Call Response
     """
-    return slack_client.chat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=True)
+    return slack_adminchat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=False)
