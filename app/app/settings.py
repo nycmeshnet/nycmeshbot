@@ -11,6 +11,58 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import logging.config
+from django.utils.log import DEFAULT_LOGGING
+
+# Disable Django's logging setup
+LOGGING_CONFIG = None
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = int(os.environ.get("DEBUG", default=0))
+
+LOGLEVEL = "DEBUG" if DEBUG else "INFO"
+
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            # exact format is not important, this is the minimum information
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
+    },
+    'handlers': {
+        # console logs to stderr
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
+    },
+    'loggers': {
+        # default for all undefined Python modules
+        '': {
+            'level': 'WARNING',
+            'handlers': ['console'],
+        },
+        # Our application code
+        'acuity': {
+            'level': LOGLEVEL,
+            'handlers': ['console'],
+            # Avoid double logging because of root logger
+            'propagate': False,
+        },
+        'lib': {
+            'level': LOGLEVEL,
+            'handlers': ['console'],
+            # Avoid double logging because of root logger
+            'propagate': False,
+        },
+        # Default runserver request logging
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+    },
+})
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,9 +73,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 

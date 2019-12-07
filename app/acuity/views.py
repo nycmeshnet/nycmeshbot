@@ -1,3 +1,8 @@
+import logging
+import requests
+import traceback
+import dateutil.parser
+
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import status
@@ -8,7 +13,7 @@ from .models import Appointments
 from .serializers import AcuityWebhookSerializer, AppointmentsSerializer
 import lib.slackapi as slackapi
 
-import requests, traceback, dateutil.parser
+logger = logging.getLogger(__name__)
 
 
 class CreateAppointmentView(generics.CreateAPIView):
@@ -17,37 +22,72 @@ class CreateAppointmentView(generics.CreateAPIView):
     """
 
     def post(self, request, *args, **kwargs):
+        """Accepts and processes the inbound API Request
+        Parameters
+        ----------
+        request : object
+            This is the DRF Request object
+
+        Returns
+        -------
+        Response
+            HTTP Response with specified **kwargs
+        """
+
         serializer = AcuityWebhookSerializer(data=request.data)
         if serializer.is_valid():
+            logger.debug("Webhook data was valid")
             if 'HTTP_X_ACUITY_SIGNATURE' in request.META:
+                logger.debug("Acuity Authorization Succeeded")
                 action = serializer.validated_data['action']
                 if action in ["scheduled", "canceled", "rescheduled", "changed"]:
                     if action == "scheduled":
+                        logger.info(f"New Appointment Request: {serializer.validated_data}")
                         self._createAppointmentTask(serializer.validated_data)
                     else:
-                        cancel = True if action == "canceled" else False
-                        self._updateAppointmentTask(serializer.validated_data, cancel)
+                        if action == "canceled":
+                            logger.info(f"Cancel Appointment: {serializer.validated_data}")
+                            self._updateAppointmentTask(serializer.validated_data, True)
+                        else:
+                            logger.info(f"Update Appointment: {serializer.validated_data}")
+                            self._updateAppointmentTask(serializer.validated_data, False)
+                    logger.debug("Return 200 OK")
                     return Response(
                         status=status.HTTP_200_OK
                     )
                 else:
+                    logger.debug(f"Acuity Webhook Action not valid. Return 200 OK to make the webhook detection at Acuity happy. Action was \"{action}\"")
                     return Response(
                         status=status.HTTP_200_OK
                     )
             else:
+                logger.debug("Acuity Webhook Signature missing or incorrect. Return 401 Not Authorized")
                 return Response(
                     status=status.HTTP_401_UNAUTHORIZED
                 )
 
         else:
+            logger.debug(f"There were validation errors: {serializer.errors}. Return 400 BAD REQUEST")
             return Response(
                 data={
-                    "message": "There were validation errors. {0}".format(serializer.errors)
+                    "message": f"There were validation errors. {serializer.errors}"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
     def _createAppointmentTask(self, serializer):
+        """Handles the creation and Slack post of a newly scheduled Appointment
+        Parameters
+        ----------
+        serializer : object
+            Serializer Instance of AcuityWebhookSerializer
+
+        Returns
+        -------
+        appt : object
+            Model Instance of Appointment model
+        """
+
         try:
             appt = self._getApptById(serializer['id'])
             slackTemplate = render_to_string("acuity/acuity_slack.j2", {
@@ -62,6 +102,19 @@ class CreateAppointmentView(generics.CreateAPIView):
             traceback.print_exc()
 
     def _updateAppointmentTask(self, serializer, cancel):
+        """Handles the update and Slack post of a rescheduled, changed, or cancelled Appointment
+        Parameters
+        ----------
+        serializer : object
+            Serializer Instance of AcuityWebhookSerializer
+        cancel : bool
+            Flag to cancel or not cancel an Appointment (default: False)
+
+        Returns
+        -------
+        None
+        """
+
         try:
             appt = self._getApptById(serializer['id'], cancel)
             slackTemplate = render_to_string("acuity/acuity_slack.j2", {
@@ -87,16 +140,33 @@ class CreateAppointmentView(generics.CreateAPIView):
             traceback.print_exc()
 
     def _getApptById(self, appt_id, cancel=False):
+        """Accepts and processes the inbound API Request
+        Parameters
+        ----------
+        appt_id : int
+            Acuity Appointment ID
+        cancel : bool
+            Flag to cancel or not cancel an Appointment (default: False)
+
+        Returns
+        -------
+        appt : object
+            Model Instance of Appointment model
+        """
+
         try:
+            logger.debug(f"Attempt to get existing Appointment from the db: appt_id={appt_id}")
             appt = Appointments.objects.get(appt_id=appt_id)
+            logger.debug(f"Appointment from the db: {appt}")
             apptExists = True
         except Appointments.DoesNotExist:
-            print("Appointment doesn't exist in db. Creating from Acuity")
+            logger.debug("Appointment doesn't exist in db. Creating from Acuity")
             apptExists = False
         try:
             acuity = requests.get("https://acuityscheduling.com/api/v1/appointments/" + str(appt_id),
                                   auth=(settings.ACUITY_USER_ID, settings.ACUITY_API_KEY))
             acuityJson = acuity.json()
+            logger.debug(f"Appointment data from Acuity: {acuityJson}")
             for form in acuityJson['forms']:
                 for field in form['values']:
                     if field['name'] == "Node Number":
@@ -109,6 +179,7 @@ class CreateAppointmentView(generics.CreateAPIView):
 
             meshapi = requests.get("https://api.nycmesh.net/v1/nodes/" + node_id)
             meshapiJson = meshapi.json()
+            logger.debug(f"Node data from NYC Mesh API: {meshapiJson}")
 
             if apptExists:
                 appt = appt
@@ -137,7 +208,10 @@ class CreateAppointmentView(generics.CreateAPIView):
                 appt_serializer = AppointmentsSerializer(data=appt_data)
 
                 if appt_serializer.is_valid(raise_exception=True):
+                    logger.debug(f"Appointment validation complete")
                     appt = appt_serializer.save(**appt_data)
         except Exception:
+            logging.exception("Trying to refresh Appointment has failed")
             traceback.print_exc()
+        logger.debug(f"Appointment: {appt}")
         return appt
