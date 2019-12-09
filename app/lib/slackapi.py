@@ -82,7 +82,7 @@ def listen():
         exit("Error, Connection Failed")
 
 
-def post_to_channel(text, channel, attachments=None):
+def post_to_channel(text, channel, attachments=None, blocks=None):
     """ Post Message to Slack channel
     Parameters
     ==========
@@ -98,7 +98,7 @@ def post_to_channel(text, channel, attachments=None):
     dict
         Slack API Call Response
     """
-    return slack_admin.chat_postMessage(channel=get_channel_id(channel), text=text, as_user=False)
+    return slack_admin.chat_postMessage(channel=get_channel_id(channel), text=text, as_user=False, blocks=blocks)
 
 
 def pin_to_channel(channel, ts):
@@ -167,7 +167,7 @@ def get_pinned_messages(channel):
     return slack_admin.pins_list(channel=get_channel_id(channel))
 
 
-def edit_message(text, channel, ts):
+def edit_message(text, channel, ts, blocks):
     """ Edit Message in Slack channel
     Parameters
     ==========
@@ -183,4 +183,4 @@ def edit_message(text, channel, ts):
     dict
         Slack API Call Response
     """
-    return slack_admin.chat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=False)
+    return slack_admin.chat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=False, blocks=blocks)

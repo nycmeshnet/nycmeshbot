@@ -2,6 +2,7 @@ import logging
 import requests
 import traceback
 import dateutil.parser
+import json
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -11,9 +12,11 @@ from django.template.loader import render_to_string
 
 from .models import Appointments
 from .serializers import AcuityWebhookSerializer, AppointmentsSerializer
+from lib.nycmeshapi import NYCMeshApi
 import lib.slackapi as slackapi
 
 logger = logging.getLogger(__name__)
+meshapi = NYCMeshApi()
 
 
 class CreateAppointmentView(generics.CreateAPIView):
@@ -89,13 +92,15 @@ class CreateAppointmentView(generics.CreateAPIView):
         """
 
         try:
-            appt = self._getApptById(serializer['id'])
+            appt, meshapiJson = self._getApptById(serializer['id'])
             slackTemplate = render_to_string("acuity/acuity_slack.j2", {
                 "appt": appt,
                 "date": appt.datetime.strftime("%A, %B %d, %Y"),
-                "time": appt.datetime.strftime("%I:%M %p")}
+                "time": appt.datetime.strftime("%I:%M %p"),
+                "meshapi": meshapiJson}
             )
-            message = slackapi.post_to_channel(slackTemplate, settings.SLACK_CHANNEL, False)
+            logger.debug(slackTemplate)
+            message = slackapi.post_to_channel(f"New {appt.appt_type}! - ID: {appt.appt_id}", settings.SLACK_CHANNEL, False, blocks=json.loads(slackTemplate))
             slackapi.pin_to_channel(message['channel'], message['ts'])
             return appt
         except Exception:
@@ -116,11 +121,12 @@ class CreateAppointmentView(generics.CreateAPIView):
         """
 
         try:
-            appt = self._getApptById(serializer['id'], cancel)
+            appt, meshapiJson = self._getApptById(serializer['id'], cancel)
             slackTemplate = render_to_string("acuity/acuity_slack.j2", {
                 "appt": appt,
                 "date": appt.datetime.strftime("%A, %B %d, %Y"),
-                "time": appt.datetime.strftime("%I:%M %p")}
+                "time": appt.datetime.strftime("%I:%M %p"),
+                "meshapi": meshapiJson}
             )
             pins = slackapi.get_pinned_messages(settings.SLACK_CHANNEL)
             for pinned in pins['items']:
@@ -133,7 +139,7 @@ class CreateAppointmentView(generics.CreateAPIView):
                 messageText = pinned['message']['text']
                 messageTS = pinned['message']['ts']
                 if str(appt.appt_id) in messageText:
-                    slackapi.edit_message(slackTemplate, settings.SLACK_CHANNEL, messageTS)
+                    slackapi.edit_message(f"New {appt.appt_type}! - ID: {appt.appt_id}", settings.SLACK_CHANNEL, messageTS, blocks=json.loads(slackTemplate))
                     if appt.cancel:
                         slackapi.delete_pin(settings.SLACK_CHANNEL, messageTS)
         except Exception:
@@ -171,14 +177,20 @@ class CreateAppointmentView(generics.CreateAPIView):
                 for field in form['values']:
                     if field['name'] == "Node Number":
                         node_id = field['value']
+                    elif field['name'] == "Request Number":
+                        request_id = field['value']
                     elif field['name'] == "Address and Apartment #":
                         address = field['value']
                     elif field['name'] == "Notes":
                         notes = field['value']
             dateTime = dateutil.parser.parse(acuityJson['datetime'])
 
-            meshapi = requests.get("https://api.nycmesh.net/v1/nodes/" + node_id)
-            meshapiJson = meshapi.json()
+            if not node_id:
+                logger.debug("Join Request Appointment")
+                meshapiJson = meshapi.getRequest(request_id)
+            else:
+                logger.debug("Support Appointment")
+                meshapiJson = meshapi.getNode(node_id)
             logger.debug(f"Node data from NYC Mesh API: {meshapiJson}")
 
             if apptExists:
@@ -186,8 +198,8 @@ class CreateAppointmentView(generics.CreateAPIView):
                 appt.datetime = dateTime
                 appt.appt_type = acuityJson['type']
                 appt.duration = acuityJson['duration']
-                appt.notes = notes
-                appt.private_notes = acuityJson['notes']
+                appt.notes = notes.encode("unicode_escape").decode("utf-8")
+                appt.private_notes = acuityJson['notes'].encode("unicode_escape").decode("utf-8")
                 appt.cancel = cancel
                 appt.save()
                 appt = appt
@@ -199,11 +211,12 @@ class CreateAppointmentView(generics.CreateAPIView):
                     'datetime': dateTime,
                     'appt_type': acuityJson['type'],
                     'duration': acuityJson['duration'],
-                    'node_id': node_id,
-                    'address': meshapiJson['location'],
-                    'notes': notes,
+                    'request_id': request_id if request_id else None,
+                    'node_id': node_id if node_id else None,
+                    'address': meshapiJson['building']['address'],
+                    'notes': notes.encode("unicode_escape").decode("utf-8"),
                     'cancel': cancel,
-                    'private_notes': acuityJson['notes']
+                    'private_notes': acuityJson['notes'].encode("unicode_escape").decode("utf-8")
                 }
                 appt_serializer = AppointmentsSerializer(data=appt_data)
 
@@ -214,4 +227,4 @@ class CreateAppointmentView(generics.CreateAPIView):
             logging.exception("Trying to refresh Appointment has failed")
             traceback.print_exc()
         logger.debug(f"Appointment: {appt}")
-        return appt
+        return (appt, meshapiJson)

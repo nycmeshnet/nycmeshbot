@@ -87,7 +87,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'acuity'
+    'acuity',
+    'slackcmd'
 ]
 
 MIDDLEWARE = [
