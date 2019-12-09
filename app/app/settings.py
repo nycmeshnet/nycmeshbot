@@ -187,3 +187,7 @@ ACUITY_API_KEY = os.environ.get("ACUITY_API_KEY")
 SLACK_API_TOKEN = os.environ.get("SLACK_API_TOKEN")
 SLACK_API_SECRET = os.environ.get("SLACK_API_SECRET")
 SLACK_CHANNEL = os.environ.get("SLACK_CHANNEL")
+
+AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
+AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID")
+AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
