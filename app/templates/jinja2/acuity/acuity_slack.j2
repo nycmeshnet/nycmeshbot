@@ -146,7 +146,7 @@
                 "type": "button",
                 "text": {
                     "type": "plain_text",
-                    "text": "View Acuity Appt"
+                    "text": "Acuity Appt"
                 },
                 "url": "{{ appt.confirmation_link|safe }}&admin=1"
             },
@@ -154,7 +154,7 @@
                 "type": "button",
                 "text": {
                     "type": "plain_text",
-                    "text": "View OSTicket"
+                    "text": "OSTicket"
                 },
                 "url": "https://support.nycmesh.net/scp/tickets.php?sort=date&dir=0&a=search&search-type=&query={% if appt.request_id -%}{{appt.request_id}}{% else %}{{appt.node_id}}{%- endif %}"
             }
