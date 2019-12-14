@@ -50,10 +50,9 @@ class CreateAppointmentView(generics.CreateAPIView):
                     else:
                         if action == "canceled":
                             logger.info(f"Cancel Appointment: {serializer.validated_data}")
-                            self._updateAppointmentTask(serializer.validated_data, True)
                         else:
                             logger.info(f"Update Appointment: {serializer.validated_data}")
-                            self._updateAppointmentTask(serializer.validated_data, False)
+                        self._updateAppointmentTask(serializer.validated_data)
                     logger.debug("Return 200 OK")
                     return Response(
                         status=status.HTTP_200_OK
@@ -106,14 +105,12 @@ class CreateAppointmentView(generics.CreateAPIView):
         except Exception:
             logger.exception("Could not create new Appointment or post to slack")
 
-    def _updateAppointmentTask(self, serializer, cancel):
+    def _updateAppointmentTask(self, serializer):
         """Handles the update and Slack post of a rescheduled, changed, or cancelled Appointment
         Parameters
         ----------
         serializer : object
             Serializer Instance of AcuityWebhookSerializer
-        cancel : bool
-            Flag to cancel or not cancel an Appointment (default: False)
 
         Returns
         -------
@@ -121,7 +118,7 @@ class CreateAppointmentView(generics.CreateAPIView):
         """
 
         try:
-            appt, meshapiJson = self._getApptById(serializer['id'], cancel)
+            appt, created, meshapiJson = Appointments.objects.update_and_retrieve(serializer['id'])
             slackTemplate = render_to_string("acuity/acuity_slack.j2", {
                 "appt": appt,
                 "date": appt.datetime.strftime("%A, %B %d, %Y"),
@@ -143,88 +140,4 @@ class CreateAppointmentView(generics.CreateAPIView):
                     if appt.cancel:
                         slackapi.delete_pin(settings.SLACK_CHANNEL, messageTS)
         except Exception:
-            traceback.print_exc()
-
-    def _getApptById(self, appt_id, cancel=False):
-        """Accepts and processes the inbound API Request
-        Parameters
-        ----------
-        appt_id : int
-            Acuity Appointment ID
-        cancel : bool
-            Flag to cancel or not cancel an Appointment (default: False)
-
-        Returns
-        -------
-        appt : object
-            Model Instance of Appointment model
-        """
-
-        try:
-            logger.debug(f"Attempt to get existing Appointment from the db: appt_id={appt_id}")
-            appt = Appointments.objects.get(appt_id=appt_id)
-            logger.debug(f"Appointment from the db: {appt}")
-            apptExists = True
-        except Appointments.DoesNotExist:
-            logger.debug("Appointment doesn't exist in db. Creating from Acuity")
-            apptExists = False
-        try:
-            acuity = requests.get("https://acuityscheduling.com/api/v1/appointments/" + str(appt_id),
-                                  auth=(settings.ACUITY_USER_ID, settings.ACUITY_API_KEY))
-            acuityJson = acuity.json()
-            logger.debug(f"Appointment data from Acuity: {acuityJson}")
-            for form in acuityJson['forms']:
-                for field in form['values']:
-                    if field['name'] == "Node Number":
-                        node_id = field['value']
-                    elif field['name'] == "Request Number":
-                        request_id = field['value']
-                    elif field['name'] == "Address and Apartment #":
-                        address = field['value']
-                    elif field['name'] == "Notes":
-                        notes = field['value']
-            dateTime = dateutil.parser.parse(acuityJson['datetime'])
-
-            if not node_id:
-                logger.debug("Join Request Appointment")
-                meshapiJson = meshapi.getRequest(request_id)
-            else:
-                logger.debug("Support Appointment")
-                meshapiJson = meshapi.getNode(node_id)
-            logger.debug(f"Node data from NYC Mesh API: {meshapiJson}")
-
-            if apptExists:
-                appt = appt
-                appt.datetime = dateTime
-                appt.appt_type = acuityJson['type']
-                appt.duration = acuityJson['duration']
-                appt.notes = notes.encode("unicode_escape").decode("utf-8")
-                appt.private_notes = acuityJson['notes'].encode("unicode_escape").decode("utf-8")
-                appt.cancel = cancel
-                appt.save()
-                appt = appt
-            else:
-                appt_data = {
-                    'appt_id': acuityJson['id'],
-                    'name': acuityJson['firstName'] + " " + acuityJson['lastName'],
-                    'phone': acuityJson['phone'],
-                    'datetime': dateTime,
-                    'appt_type': acuityJson['type'],
-                    'duration': acuityJson['duration'],
-                    'request_id': request_id if request_id else None,
-                    'node_id': node_id if node_id else None,
-                    'address': meshapiJson['building']['address'],
-                    'notes': notes.encode("unicode_escape").decode("utf-8"),
-                    'cancel': cancel,
-                    'private_notes': acuityJson['notes'].encode("unicode_escape").decode("utf-8")
-                }
-                appt_serializer = AppointmentsSerializer(data=appt_data)
-
-                if appt_serializer.is_valid(raise_exception=True):
-                    logger.debug(f"Appointment validation complete")
-                    appt = appt_serializer.save(**appt_data)
-        except Exception:
-            logging.exception("Trying to refresh Appointment has failed")
-            traceback.print_exc()
-        logger.debug(f"Appointment: {appt}")
-        return (appt, meshapiJson)
+            logger.exception("Could not update Appointment or post to slack")
