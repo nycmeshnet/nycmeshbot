@@ -60,7 +60,8 @@ class AppointmentsBaseManager(models.Manager):
             'address': meshapiJson['building']['address'],
             'notes': notes.encode("unicode_escape").decode("utf-8"),
             'cancel': acuityJson['canceled'],
-            'private_notes': acuityJson['notes'].encode("unicode_escape").decode("utf-8")
+            'private_notes': acuityJson['notes'].encode("unicode_escape").decode("utf-8"),
+            'confirmation_link': acuityJson['confirmationPage']
         }
 
         return appt, meshapiJson
@@ -82,6 +83,7 @@ class AppointmentsBaseManager(models.Manager):
                 obj.notes = appt['notes'].encode("unicode_escape").decode("utf-8")
                 obj.private_notes = appt['private_notes'].encode("unicode_escape").decode("utf-8")
                 obj.cancel = appt['cancel']
+                obj.confirmation_link = appt['confirmation_link']
                 obj.save()
                 logger.debug(f"Appointment save complete")
             return obj, False, meshapiJson
@@ -132,5 +134,6 @@ class Appointments(models.Model):
     notes = models.TextField(blank=True)
     cancel = models.BooleanField(default=False)
     private_notes = models.TextField(blank=True)
+    confirmation_link = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
