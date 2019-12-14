@@ -56,21 +56,33 @@
     {
         "type": "divider"
     },
+{% if appt.private_notes -%}
     {
         "type": "section",
-        "fields": [
-            {
-                "type": "mrkdwn",
-                "text": "*Internal Notes:*\n{{appt.notes}}"
-            },
-            {
-                "type": "mrkdwn",
-                "text": "*Notes from Member:*\n{{ appt.private_notes }}"
-            }
-        ]
+        "text": {
+            "type": "mrkdwn",
+            "text": "*Internal Notes:*\n{{appt.private_notes}}"
+        }
     },
+{%- endif %}
+{% if appt.notes -%}
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*Notes from Member:*\n{{ appt.notes }}"
+        }
+    },
+{%- endif %}
     {
         "type": "divider"
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "Resources"
+        }
     },
     {
         "type": "actions",
@@ -114,6 +126,37 @@
                     "text": "Apple Maps"
                 },
                 "url": "https://maps.apple.com/?q={{appt.address | urlencode}}"
+            }
+        ]
+    },
+    {
+        "type": "divider"
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "Actions"
+        }
+    },
+    {
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "View Acuity Appt"
+                },
+                "url": "{{ appt.confirmation_link|safe }}&admin=1"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "View OSTicket"
+                },
+                "url": "https://support.nycmesh.net/scp/tickets.php?sort=date&dir=0&a=search&search-type=&query={% if appt.request_id -%}{{appt.request_id}}{% else %}{{appt.node_id}}{%- endif %}"
             }
         ]
     },

@@ -92,7 +92,7 @@ class CreateAppointmentView(generics.CreateAPIView):
         """
 
         try:
-            appt, meshapiJson = self._getApptById(serializer['id'])
+            appt, created, meshapiJson = Appointments.objects.update_and_retrieve(serializer['id'])
             slackTemplate = render_to_string("acuity/acuity_slack.j2", {
                 "appt": appt,
                 "date": appt.datetime.strftime("%A, %B %d, %Y"),
@@ -104,7 +104,7 @@ class CreateAppointmentView(generics.CreateAPIView):
             slackapi.pin_to_channel(message['channel'], message['ts'])
             return appt
         except Exception:
-            traceback.print_exc()
+            logger.exception("Could not create new Appointment or post to slack")
 
     def _updateAppointmentTask(self, serializer, cancel):
         """Handles the update and Slack post of a rescheduled, changed, or cancelled Appointment
