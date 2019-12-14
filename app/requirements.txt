@@ -5,6 +5,8 @@ django-filter==2.2.0
 djangorestframework==3.10.3
 Jinja2==2.10.3
 python-dateutil==2.8.1
-slackclient
+slackclient==2.3.1
 psycopg2
-requests
+requests==2.22.0
+gunicorn
+auth0-python==3.9.1

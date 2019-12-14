@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Appointments
 
+
 class AcuityWebhookSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     action = serializers.CharField(max_length=20)

@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path('api/(?P<version>(v1|v2))/', include('acuity.urls')),
     path('acuity/', include('acuity.urls')),
+    path('slackcmd/', include('slackcmd.urls')),
     path('', include('acuity.urls'))
 ]

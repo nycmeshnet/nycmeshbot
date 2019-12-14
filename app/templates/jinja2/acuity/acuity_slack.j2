@@ -1,14 +1,173 @@
-<!channel> - ID: {{appt.appt_id}}
-
-{% if appt.cancel -%}*Cancelled* - {% endif %}[{{appt.appt_type}}] request node: <https://www.nycmesh.net/map/nodes/{{appt.node_id}}|{{appt.node_id}}>
-
-Who: {{appt.name}}
-When: *{{date}}* at {{time}}
-Where: {{appt.address}}
-Phone: {{appt.phone}}
-
-Additional Notes: {{appt.notes}}
-
-{% if appt.private_notes|length -%}{{ appt.private_notes }}{%- endif %}
-
-Are you available? Thread here
+[
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "<!channel> - New {{appt.appt_type}}!"
+        }
+    },
+{% if appt.cancel -%}
+    {
+        "type": "context",
+        "elements": [
+            {
+                "type": "mrkdwn",
+                "text": ":warning: :calendar: This appointment has been *CANCELLED*"
+            }
+        ]
+    },
+{% endif %}
+    {
+        "type": "section",
+        "fields": [
+            {
+                "type": "mrkdwn",
+                "text": "*Type:*\n{{appt.appt_type}}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": "*When:*\n*{{date}}* at {{time}}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": "*Who:*\n{{appt.name}}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": "*Where:*\n{{appt.address}}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": "*Phone:*\n{{appt.phone}}"
+            },
+{% if appt.request_id -%}
+            {
+                "type": "mrkdwn",
+                "text": "*Request ID:*\n{{appt.request_id}}"
+            }
+{% else %}
+            {
+                "type": "mrkdwn",
+                "text": "*Node ID:*\n{{appt.node_id}}"
+            }
+{%- endif %}
+        ]
+    },
+    {
+        "type": "divider"
+    },
+{% if appt.private_notes -%}
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*Internal Notes:*\n{{appt.private_notes|safe}}"
+        }
+    },
+{%- endif %}
+{% if appt.notes -%}
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*Notes from Member:*\n{{ appt.notes|safe }}"
+        }
+    },
+{%- endif %}
+    {
+        "type": "divider"
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "Resources"
+        }
+    },
+    {
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Node Map"
+                },
+                "url": "https://www.nycmesh.net/map/nodes/{% if appt.request_id -%}{{appt.request_id}}{% else %}{{appt.node_id}}{%- endif %}"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Earth"
+                },
+                "url": "https://earth.google.com/web/search/{{appt.address|replace(',','')|replace(' ','+')}}/@{{meshapi['building']['lat']}},{{meshapi['building']['lng']}},{{meshapi['building']['alt']}}a,300d,40y,0.6h,65t,0r"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Line of Sight"
+                },
+                "url": "https://los.nycmesh.net/search?address={{appt.address|urlencode}}&bin={{meshapi['building']['bin']}}&lat={{meshapi['building']['lat']}}&lng={{meshapi['building']['lng']}}"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Google Maps"
+                },
+                "url": "https://www.google.com/maps/place/{{appt.address | urlencode}}"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Apple Maps"
+                },
+                "url": "https://maps.apple.com/?q={{appt.address | urlencode}}"
+            }
+        ]
+    },
+    {
+        "type": "divider"
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "Actions"
+        }
+    },
+    {
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Acuity Appt"
+                },
+                "url": "{{ appt.confirmation_link|safe }}&admin=1"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "OSTicket"
+                },
+                "url": "https://support.nycmesh.net/scp/tickets.php?sort=date&dir=0&a=search&search-type=&query={% if appt.request_id -%}{{appt.request_id}}{% else %}{{appt.node_id}}{%- endif %}"
+            }
+        ]
+    },
+    {
+        "type": "divider"
+    },
+    {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "Are you available? Thread here"
+        }
+    }
+]
