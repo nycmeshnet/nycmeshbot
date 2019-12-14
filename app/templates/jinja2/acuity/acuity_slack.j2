@@ -61,7 +61,7 @@
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "*Internal Notes:*\n{{appt.private_notes}}"
+            "text": "*Internal Notes:*\n{{appt.private_notes|safe}}"
         }
     },
 {%- endif %}
@@ -70,7 +70,7 @@
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "*Notes from Member:*\n{{ appt.notes }}"
+            "text": "*Notes from Member:*\n{{ appt.notes|safe }}"
         }
     },
 {%- endif %}

@@ -59,7 +59,7 @@ class AppointmentsBaseManager(models.Manager):
             'request_id': request_id if request_id else None,
             'node_id': node_id if node_id else None,
             'address': meshapiJson['building']['address'],
-            'notes': notes.encode("unicode_escape").decode("utf-8"),
+            'notes': notes,
             'cancel': acuityJson['canceled'],
             'private_notes': acuityJson['notes'].encode("unicode_escape").decode("utf-8"),
             'confirmation_link': acuityJson['confirmationPage']
