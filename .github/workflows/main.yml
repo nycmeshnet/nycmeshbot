@@ -1,0 +1,47 @@
+name: Build and Deploy Release Tag
+
+on:
+  push:
+    branches:
+      - refs/tags/*
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: SSH to server and checkout new version
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /opt/nycmeshbot
+            git pull --tags
+            git checkout ${{ steps.get_version.outputs.VERSION }}
+          host: ${{ secrets.BOT_HOST }}
+          key: ${{ secrets.PROD_DEPLOY_KEY }}
+          user: ${{ secrets.BOT_HOST_USER }}
+      - name: Build and Deploy new containers
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /opt/nycmeshbot
+            git checkout ${{ steps.get_version.outputs.VERSION }}
+            docker-compose -f docker-compose.prod.yml build
+            docker-compose -f docker-compose.prod.yml up -d
+          host: ${{ secrets.BOT_HOST }}
+          key: ${{ secrets.PROD_DEPLOY_KEY }}
+          user: ${{ secrets.BOT_HOST_USER }}
+      - name: Run migrations
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /opt/nycmeshbot
+            git checkout ${{ steps.get_version.outputs.VERSION }}
+            docker exec -i nycmeshbot_web_1 python manage.py migrate
+          host: ${{ secrets.BOT_HOST }}
+          key: ${{ secrets.PROD_DEPLOY_KEY }}
+          user: ${{ secrets.BOT_HOST_USER }}

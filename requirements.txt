@@ -1,8 +1,0 @@
-python-dateutil
-slackclient
-Django==2.2
-django-cors-headers==2.5.2
-django-debug-toolbar==1.11
-django-filter==2.1.0
-djangorestframework==3.9.2
-Jinja2==2.10.1

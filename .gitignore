@@ -28,5 +28,10 @@ venv
 *.pyc
 build
 .env
+.env.dev
+.env.dev.db
+.env.prod
+.env.prod.db
 oldapp
 app/logs/*
+app/acuity.old/
