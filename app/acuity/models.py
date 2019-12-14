@@ -2,6 +2,7 @@ import logging
 import requests
 import json
 import dateutil.parser
+import re
 
 from django.conf import settings
 from django.db import models
@@ -29,9 +30,9 @@ class AppointmentsBaseManager(models.Manager):
         for form in acuityJson['forms']:
             for field in form['values']:
                 if field['name'] == "Node Number":
-                    node_id = field['value']
+                    node_id = re.sub("[^0-9]", "", field['value'])
                 elif field['name'] == "Request Number":
-                    request_id = field['value']
+                    request_id = re.sub("[^0-9]", "", field['value'])
                 elif field['name'] == "Address and Apartment #":
                     address = field['value']
                 elif field['name'] == "Notes":
