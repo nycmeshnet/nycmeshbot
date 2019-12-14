@@ -60,10 +60,10 @@ class NYCMeshApi(object):
                 else:
                     raise MeshApiException(data['error'])
         except requests.exceptions.RequestException:
-            logger.exception("NYCMesh API Request Failed")
+            logger.exception(f"NYCMesh API Request Failed. getRequest({request_id})")
             raise
         except Exception:
-            logger.exception("NYCMesh API Request Failed")
+            logger.exception(f"NYCMesh API Request Failed. getRequest({request_id})")
         return data
 
     def getNodes(self):
@@ -91,10 +91,12 @@ class NYCMeshApi(object):
                 else:
                     raise MeshApiException(data['error'])
         except requests.exceptions.RequestException:
-            logger.exception("NYCMesh API Request Failed")
+            logger.exception(f"NYCMesh API Request Failed. getNode({node_id})")
             raise
+        except ObjectDoesNotExist:
+            return self.getRequest(node_id)
         except Exception:
-            logger.exception("NYCMesh API Request Failed")
+            logger.exception(f"NYCMesh API Request Failed. getNode({node_id})")
         return data
 
     def _get(self, path, params=None):

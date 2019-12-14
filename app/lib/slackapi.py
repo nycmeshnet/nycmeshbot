@@ -184,3 +184,20 @@ def edit_message(text, channel, ts, blocks):
         Slack API Call Response
     """
     return slack_admin.chat_update(channel=get_channel_id(channel), text=text, ts=ts, as_user=False, blocks=blocks)
+
+
+def open_modal(trigger_id, view):
+    """ Edit Message in Slack channel
+    Parameters
+    ==========
+    trigger_id : str
+        Trigger ID of an interactive component
+    view : dict
+        Dictionary of the modal view to create
+
+    Returns
+    =======
+    dict
+        Slack API Call Response
+    """
+    return slack_client.views_open(trigger_id=trigger_id, view=view)
