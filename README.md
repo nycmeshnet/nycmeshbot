@@ -5,12 +5,6 @@ The NYCMeshBot is a Django based Slackbot.
 ![](https://img.shields.io/github/stars/nycmeshnet/nycmeshbot.svg) ![](https://img.shields.io/github/forks/nycmeshnet/nycmeshbot.svg) ![](https://img.shields.io/github/tag/nycmeshnet/nycmeshbot.svg) ![](https://img.shields.io/github/issues/nycmeshnet/nycmeshbot.svg) ![](https://img.shields.io/github/license/nycmeshnet/nycmeshbot.svg)
 
 
-**Table of Contents**
-
-[TOCM]
-
-[TOC]
-
 #### Highlights
 - Docker based for easy and repeatable dev and prod deployments
 - Django based, making it easy for Python developers to contribute
