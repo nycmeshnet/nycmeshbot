@@ -1,9 +1,11 @@
 name: Build and Deploy Release Tag
 
 on:
+  release:
+    types: [created, published, edited]
   push:
     branches:
-      - refs/tags/*
+      - 'releases/**'
 
 jobs:
   deploy:
