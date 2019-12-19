@@ -22,33 +22,33 @@
         "fields": [
             {
                 "type": "mrkdwn",
-                "text": "*Type:*\n{{appt.appt_type}}"
+                "text": "*Type:* {{appt.appt_type}}"
             },
             {
                 "type": "mrkdwn",
-                "text": "*When:*\n*{{date}}* at {{time}}"
+                "text": "*When:* *{{date}}* at {{time}}"
             },
             {
                 "type": "mrkdwn",
-                "text": "*Who:*\n{{appt.name}}"
+                "text": "*Who:* {{appt.name}}"
             },
             {
                 "type": "mrkdwn",
-                "text": "*Where:*\n{{appt.address}}"
+                "text": "*Where:* {{appt.address}}"
             },
             {
                 "type": "mrkdwn",
-                "text": "*Phone:*\n{{appt.phone}}"
+                "text": "*Phone:* {{appt.phone}}"
             },
 {% if appt.request_id -%}
             {
                 "type": "mrkdwn",
-                "text": "*Request ID:*\n{{appt.request_id}}"
+                "text": "*Request ID:* {{appt.request_id}}"
             }
 {% else %}
             {
                 "type": "mrkdwn",
-                "text": "*Node ID:*\n{{appt.node_id}}"
+                "text": "*Node ID:* {{appt.node_id}}"
             }
 {%- endif %}
         ]
@@ -61,7 +61,7 @@
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "*Internal Notes:*\n{{appt.private_notes|safe}}"
+            "text": "*Internal Notes:* {{appt.private_notes|safe}}"
         }
     },
 {%- endif %}
@@ -70,7 +70,7 @@
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "*Notes from Member:*\n{{ appt.notes|safe }}"
+            "text": "*Notes from Member:* {{ appt.notes|safe }}"
         }
     },
 {%- endif %}
